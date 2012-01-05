@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Gitter.  If not, see <http://www.gnu.org/licenses/>.
 
-from distutils.core import setup
+from setuptools import setup
 
 DESCRIPTION = """
-Provides an inline interactive menu for selecting files / branches / hashes
-when running the git command line interface and stays out of the way.
+A command line interface for git that shows interactive menus for files /
+branches / hashes when appropriate and stays out of way the rest of the time.
 """
 
 setup(
@@ -43,6 +43,6 @@ setup(
         'Programming Language :: Python',
         'Topic :: Terminals'
     ],
-    requires=['termenu (>=0.3.0)'],
+    install_requires=["termenu>=0.3.0"],
 )
 
