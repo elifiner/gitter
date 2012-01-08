@@ -21,7 +21,7 @@ class GitRunner(object):
             return self._exec_git([self.command] + self.args)
 
     def _exec_git(self, args):
-        command = " ".join([GITBIN] + args)
+        command = " ".join([GITBIN] + self._quote_args(args))
         return os.system(command)
 
     def _free_args(self, args):
@@ -29,6 +29,9 @@ class GitRunner(object):
 
     def _options(self, args):
         return set([arg for arg in args if arg.startswith("-")])
+
+    def _quote_args(self, args):
+        return ['"%s"' % arg if " " in arg else arg for arg in args]
 
     # Getters for lists of items to show in a menu
 
@@ -40,7 +43,7 @@ class GitRunner(object):
     def _list_status_files(self, workspaceStatuses="?M ", indexStatuses="?M "):
         lines = os.popen("%s status --porcelain" % GITBIN).readlines()
         files = [line[2:].strip() for line in lines if line[1] in workspaceStatuses or line[0] in indexStatuses]
-        return list(sorted(files))
+        return list(files)
 
     def _list_commits(self):
         lines = os.popen("%s log --oneline" % GITBIN).readlines()
@@ -77,7 +80,7 @@ class GitRunner(object):
         return self._command_with_menu(lambda: self._list_status_files("M?", ""), multiSelect=True)
 
     def _do_reset(self):
-        return self._command_with_menu(lambda: self._list_status_files("", "M"), multiSelect=True)
+        return self._command_with_menu(lambda: self._list_status_files("", "MA"), multiSelect=True)
 
     def _do_show(self):
         return self._command_with_hash()
