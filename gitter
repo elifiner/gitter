@@ -77,7 +77,7 @@ class GitRunner(object):
         return self._command_with_menu(self._list_branches, multiSelect=False)
 
     def _do_add(self):
-        return self._command_with_menu(lambda: self._list_status_files("M?", ""), multiSelect=True)
+        return self._command_with_menu(lambda: self._list_status_files("UM?", ""), multiSelect=True)
 
     def _do_reset(self):
         return self._command_with_menu(lambda: self._list_status_files("", "MA"), multiSelect=True)
