@@ -134,7 +134,10 @@ class GitRunner(object):
         untracked = self._list_status_files("?", "")
         if untracked:
             untracked.insert(0, "-- Untracked files --")
-        return self._command_with_menu(modified + untracked, multiSelect=True)
+        both = self._list_status_files("", "U")
+        if both:
+            both.insert(0, "-- Both modified --")
+        return self._command_with_menu(modified + both + untracked, multiSelect=True)
 
     def _do_reset(self):
         toBeCommitted = self._list_status_files("", "MA")
