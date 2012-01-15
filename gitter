@@ -5,8 +5,48 @@ import termenu
 
 GITBIN = "/usr/bin/git"
 
+class TitleMenu(termenu.Menu):
+    def __init__(self, *args, **kwargs):
+        super(TitleMenu, self).__init__(*args, **kwargs)
+        if self.options[self.selected].startswith("-"):
+            self._on_down()
+
+    def _dispatch_key(self, key):
+        retval = super(TitleMenu, self)._dispatch_key(key)
+        if self.options[self.selected].startswith("-"):
+            if self.selected == 0:
+                super(TitleMenu, self)._on_down()
+            elif self.selected == len(self.options)-1:
+                super(TitleMenu, self)._on_up()
+            elif key in ["up", "pageUp", "home"]:
+                super(TitleMenu, self)._on_up()
+            elif key in ["down", "pageDown", "end", "space"]:
+                super(TitleMenu, self)._on_down()
+        return retval
+
+    def _build_menu_item(self, index, option):
+        if option.startswith("-"):
+            option = termenu.ansi.colorize(option, "white", bright=True)
+        return super(TitleMenu, self)._build_menu_item(index, option)
+
+def show_menu(*args, **kwargs):
+    multiSelect = kwargs.get("multiSelect")
+    del kwargs["multiSelect"]
+    if multiSelect:
+        class MenuClass(termenu.MultiSelectMixin, termenu.FilterMixin, TitleMenu):
+            pass
+    else:
+        class MenuClass(termenu.FilterMixin, TitleMenu):
+            pass
+    menu = MenuClass(*args, **kwargs)
+    return menu.show()
+
 class GitRunner(object):
     def __init__(self, args):
+        self._debug = False
+        if args and args[0] == "--gitter-debug":
+            self._debug = True
+            args = args[1:]
         self.args = args
 
     def run(self):
@@ -25,7 +65,10 @@ class GitRunner(object):
 
     def _exec_git(self, args):
         command = " ".join([GITBIN] + self._quote_args(args))
-        return os.system(command)
+        if self._debug:
+            print command
+        else:
+            return os.system(command)
 
     def _free_args(self, args):
         return [arg for arg in args if not arg.startswith("-")]
@@ -53,11 +96,10 @@ class GitRunner(object):
         lines = map(str.strip, lines)
         return lines
 
-    def _command_with_menu(self, listFunc, multiSelect):
-        options = listFunc()
+    def _command_with_menu(self, options, multiSelect):
         if not options:
             return
-        selected = termenu.show_menu("", options, multiSelect=multiSelect)
+        selected = show_menu("", options, multiSelect=multiSelect)
         if not selected:
             return
         if not multiSelect:
@@ -77,13 +119,28 @@ class GitRunner(object):
     # Command handlers
 
     def _do_checkout(self):
-        return self._command_with_menu(self._list_branches, multiSelect=False)
+        branches = self._list_branches()
+        if branches:
+            branches.insert(0, "-- Branches --")
+        files = self._list_status_files("M", "")
+        if files:
+            files.insert(0, "-- Files --")
+        return self._command_with_menu(branches + files, multiSelect=True)
 
     def _do_add(self):
-        return self._command_with_menu(lambda: self._list_status_files("UM?", ""), multiSelect=True)
+        modified = self._list_status_files("M", "")
+        if modified:
+            modified.insert(0, "-- Modified files --")
+        untracked = self._list_status_files("?", "")
+        if untracked:
+            untracked.insert(0, "-- Untracked files --")
+        return self._command_with_menu(modified + untracked, multiSelect=True)
 
     def _do_reset(self):
-        return self._command_with_menu(lambda: self._list_status_files("", "MA"), multiSelect=True)
+        toBeCommitted = self._list_status_files("", "MA")
+        if toBeCommitted:
+            toBeCommitted.insert(0, "-- Files to be committed --")
+        return self._command_with_menu(toBeCommitted, multiSelect=True)
 
     def _do_show(self):
         return self._command_with_hash()
@@ -91,7 +148,7 @@ class GitRunner(object):
     def _do_branch(self):
         options = self._options(self.args)
         if "-D" in options or "-d" in options:
-            return self._command_with_menu(self._list_branches, multiSelect=True)
+            return self._command_with_menu(self._list_branches(), multiSelect=True)
         else:
             return self._exec_default()
 
