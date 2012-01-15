@@ -130,10 +130,10 @@ class GitRunner(object):
     def _do_add(self):
         modified = self._list_status_files("M", "")
         if modified:
-            modified.insert(0, "-- Modified files --")
+            modified.insert(0, "-- Modified --")
         untracked = self._list_status_files("?", "")
         if untracked:
-            untracked.insert(0, "-- Untracked files --")
+            untracked.insert(0, "-- Untracked --")
         both = self._list_status_files("", "U")
         if both:
             both.insert(0, "-- Both modified --")
@@ -142,7 +142,7 @@ class GitRunner(object):
     def _do_reset(self):
         toBeCommitted = self._list_status_files("", "MA")
         if toBeCommitted:
-            toBeCommitted.insert(0, "-- Files to be committed --")
+            toBeCommitted.insert(0, "-- To be committed --")
         return self._command_with_menu(toBeCommitted, multiSelect=True)
 
     def _do_show(self):
