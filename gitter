@@ -128,6 +128,9 @@ class GitRunner(object):
         return self._command_with_menu(files + branches, multiSelect=True)
 
     def _do_add(self):
+        options = self._options(self.args)
+        if "-i" in options or "--interactive" in options:
+            return self._exec_default()
         modified = self._list_status_files("M", "")
         if modified:
             modified.insert(0, "-- Modified --")
