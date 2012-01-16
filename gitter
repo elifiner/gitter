@@ -176,6 +176,12 @@ class GitRunner(object):
             tracked.insert(0, "-- Tracked --")
         return self._command_with_menu(deleted + tracked, multiSelect=True)
 
+    def _do_clean(self):
+        untracked = self._list_status_files("?", "?")
+        if untracked:
+            untracked.insert(0, "-- Untracked --")
+        return self._command_with_menu(untracked, multiSelect=True)
+
 if __name__ == "__main__":
     ret = GitRunner(sys.argv[1:]).run()
     sys.exit(ret or 127)
