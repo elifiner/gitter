@@ -93,6 +93,10 @@ class GitRunner(object):
         files = [os.path.relpath(os.path.os.path.join(root, file)) for file in files]
         return list(files)
 
+    def _list_local_files(self):
+        lines = os.popen("%s ls-files" % GITBIN).readlines()
+        return map(str.strip, lines)
+
     def _list_commits(self):
         lines = os.popen("%s log --oneline" % GITBIN).readlines()
         lines = map(str.strip, lines)
@@ -101,7 +105,7 @@ class GitRunner(object):
     def _command_with_menu(self, options, multiSelect):
         if not options:
             return
-        selected = show_menu("", options, multiSelect=multiSelect)
+        selected = show_menu("", options, multiSelect=multiSelect, columns=1, rows=15)
         if not selected:
             return
         if not multiSelect:
@@ -159,6 +163,15 @@ class GitRunner(object):
             return self._command_with_menu(self._list_branches(), multiSelect=True)
         else:
             return self._exec_default()
+
+    def _do_rm(self):
+        deleted = self._list_status_files("D", "")
+        if deleted:
+            deleted.insert(0, "-- Deleted --")
+        tracked = self._list_local_files()
+        if tracked:
+            tracked.insert(0, "-- Tracked --")
+        return self._command_with_menu(deleted + tracked, multiSelect=True)
 
 if __name__ == "__main__":
     ret = GitRunner(sys.argv[1:]).run()
