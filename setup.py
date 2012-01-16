@@ -34,10 +34,10 @@ setup(
     url='https://github.com/gooli/Gitter',
     scripts=['gitter'],
     classifiers=[
-        'Development Status :: Development Status :: 4 - Beta',
+        'Development Status :: Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Programming Language :: Python',
