@@ -125,13 +125,16 @@ class GitRunner(object):
     # Command handlers
 
     def _do_checkout(self):
-        files = self._list_status_files("M", "")
-        if files:
-            files.insert(0, "-- Files --")
+        modified = self._list_status_files("M", "")
+        if modified:
+            modified.insert(0, "-- Modified --")
+        deleted = self._list_status_files("D", "")
+        if deleted:
+            deleted.insert(0, "-- Deleted --")
         branches = self._list_branches()
         if branches:
             branches.insert(0, "-- Branches --")
-        return self._command_with_menu(files + branches, multiSelect=True)
+        return self._command_with_menu(modified + deleted + branches, multiSelect=True)
 
     def _do_add(self):
         options = self._options(self.args)
