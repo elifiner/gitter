@@ -63,7 +63,7 @@ class GitRunner(object):
 
         # If free argument provided, run git as is
         if self.freeArgs:
-            self._exec_default()
+            return self._exec_default()
 
         # Dispatch the git command to a specified handler
         func = "_do_" + self.command.replace("-", "_")
