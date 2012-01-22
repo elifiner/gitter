@@ -98,7 +98,7 @@ class GitRunner(object):
     def _list_branches(self):
         branches = os.popen("%s branch" % GITBIN).readlines()
         branches = [b.strip("*").strip() for b in branches]
-        return self._with_header("Branches --", list(sorted(branches)))
+        return self._with_header("Branches", list(sorted(branches)))
 
     def _list_modified(self):
         return self._with_header("Modified", self._status_files("M", ""))
@@ -119,8 +119,8 @@ class GitRunner(object):
         lines = os.popen("%s ls-files" % GITBIN).readlines()
         return self._with_header("Tracked", map(str.strip, lines))
 
-    def _list_commits(self):
-        lines = os.popen("%s log --oneline" % GITBIN).readlines()
+    def _list_commits(self, branch):
+        lines = os.popen("%s log %s --oneline" % (GITBIN, branch)).readlines()
         lines = map(str.strip, lines)
         return lines
 
@@ -136,11 +136,11 @@ class GitRunner(object):
             selected = [selected]
         return self._exec_git([self.command] + self.args + selected)
 
-    def _command_with_hash(self):
-        options = self._list_commits()
+    def _command_with_hash(self, branch=""):
+        options = self._list_commits(branch)
         if not options:
             return
-        selected = termenu.show_menu("", options, multiSelect=False, columns=1, rows=15)
+        selected = show_menu("", options, multiSelect=False, columns=1, rows=15)
         if not selected:
             return
         selected = selected.split(" ", 1)[0]
@@ -176,6 +176,11 @@ class GitRunner(object):
 
     def _do_clean(self):
         return self._command_with_menu(self._list_untracked(), multiSelect=True)
+
+    def _do_cherry_pick(self):
+        branches = self._list_branches()
+        branch = show_menu("", branches, multiSelect=False, columns=1, rows=15, maxColumnWidth=50)
+        return self._command_with_hash(branch)
 
 if __name__ == "__main__":
     ret = GitRunner(sys.argv[1:]).run()
