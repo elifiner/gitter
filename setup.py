@@ -24,14 +24,14 @@ branches / hashes when appropriate and stays out of way the rest of the time.
 """
 
 setup(
-    name='Gitter',
+    name='gitter',
     version='0.1.0',
     description='Interactive in-line menus for Unix-based terminals',
     long_description=DESCRIPTION,
     author='Eli Golovinsky',
     license='GPL',
     author_email='eli.golovinsky@gmail.com',
-    url='https://github.com/gooli/Gitter',
+    url='https://github.com/gooli/gitter',
     scripts=['gitter'],
     classifiers=[
         'Development Status :: Development Status :: 3 - Alpha',
