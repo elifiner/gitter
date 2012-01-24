@@ -34,7 +34,7 @@ setup(
     url='https://github.com/gooli/gitter',
     scripts=['gitter'],
     classifiers=[
-        'Development Status :: Development Status :: 3 - Alpha',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
