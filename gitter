@@ -5,45 +5,9 @@ import termenu
 
 GITBIN = "/usr/bin/git"
 
-class TitleMenu(termenu.Menu):
-    """
-    An interactive menu that can display in-line headers for different types of
-    data. Headers are lines that start with a dash.
-    """
-    def __init__(self, *args, **kwargs):
-        super(TitleMenu, self).__init__(*args, **kwargs)
-        if self.options[self.selected].startswith("-"):
-            self._on_down()
-
-    def _dispatch_key(self, key):
-        retval = super(TitleMenu, self)._dispatch_key(key)
-        if self.options[self.selected].startswith("-"):
-            if self.selected == 0:
-                super(TitleMenu, self)._on_down()
-            elif self.selected == len(self.options)-1:
-                super(TitleMenu, self)._on_up()
-            elif key in ["up", "pageUp", "home"]:
-                super(TitleMenu, self)._on_up()
-            elif key in ["down", "pageDown", "end", "space"]:
-                super(TitleMenu, self)._on_down()
-        return retval
-
-    def _build_menu_item(self, index, option):
-        if option.startswith("-"):
-            option = termenu.ansi.colorize(option, "white", bright=True)
-        return super(TitleMenu, self)._build_menu_item(index, option)
-
-def show_menu(*args, **kwargs):
-    multiSelect = kwargs.get("multiSelect")
-    del kwargs["multiSelect"]
-    if multiSelect:
-        class MenuClass(termenu.MultiSelectMixin, termenu.FilterMixin, TitleMenu):
-            pass
-    else:
-        class MenuClass(termenu.FilterMixin, TitleMenu):
-            pass
-    menu = MenuClass(*args, **kwargs)
-    return menu.show()
+def show_menu(options, multiselect):
+    plugins = [termenu.FilterPlugin(), termenu.HeaderPlugin()]
+    return termenu.Termenu(options, multiselect=multiselect, height=15, plugins=plugins).show()
 
 class GitRunner(object):
     def __init__(self, args):
@@ -86,7 +50,7 @@ class GitRunner(object):
     # Lists of items to show in a menu
 
     def _with_header(self, header, lines):
-        return ["-- %s --" % header] + lines if lines else lines
+        return [termenu.Header("-- %s --" % header)] + lines if lines else lines
 
     def _status_files(self, workspaceStatuses="?M ", indexStatuses="?M "):
         lines = os.popen("%s status --porcelain" % GITBIN).readlines()
@@ -126,21 +90,19 @@ class GitRunner(object):
 
     # Command abstractions
 
-    def _command_with_menu(self, options, multiSelect):
+    def _command_with_menu(self, options, multiselect):
         if not options:
             return
-        selected = show_menu("", options, multiSelect=multiSelect, columns=1, rows=15)
+        selected = show_menu(options, multiselect=multiselect)
         if not selected:
             return
-        if not multiSelect:
-            selected = [selected]
         return self._exec_git([self.command] + self.args + selected)
 
     def _command_with_hash(self, branch=""):
         options = self._list_commits(branch)
         if not options:
             return
-        selected = show_menu("", options, multiSelect=False, columns=1, rows=15)
+        selected = show_menu(options, multiselect=False)
         if not selected:
             return
         selected = selected.split(" ", 1)[0]
@@ -149,37 +111,37 @@ class GitRunner(object):
     # Command handlers
 
     def _do_checkout(self):
-        return self._command_with_menu(self._list_modified() + self._list_deleted() + self._list_branches(), multiSelect=True)
+        return self._command_with_menu(self._list_modified() + self._list_deleted() + self._list_branches(), multiselect=True)
 
     def _do_add(self):
         if "-i" in self.flags or "--interactive" in self.flags:
             return self._exec_default()
-        return self._command_with_menu(self._list_modified() + self._list_both_modified() + self._list_untracked(), multiSelect=True)
+        return self._command_with_menu(self._list_modified() + self._list_both_modified() + self._list_untracked(), multiselect=True)
 
     def _do_reset(self):
-        return self._command_with_menu(self._list_to_be_committed(), multiSelect=True)
+        return self._command_with_menu(self._list_to_be_committed(), multiselect=True)
 
     def _do_show(self):
         return self._command_with_hash()
 
     def _do_branch(self):
         if "-D" in self.flags or "-d" in self.flags:
-            return self._command_with_menu(self._list_branches(), multiSelect=True)
+            return self._command_with_menu(self._list_branches(), multiselect=True)
         else:
             return self._exec_default()
 
     def _do_merge(self):
-        return self._command_with_menu(self._list_branches(), multiSelect=False)
+        return self._command_with_menu(self._list_branches(), multiselect=False)
 
     def _do_rm(self):
-        return self._command_with_menu(self._list_deleted() + self._list_tracked(), multiSelect=True)
+        return self._command_with_menu(self._list_deleted() + self._list_tracked(), multiselect=True)
 
     def _do_clean(self):
-        return self._command_with_menu(self._list_untracked(), multiSelect=True)
+        return self._command_with_menu(self._list_untracked(), multiselect=True)
 
     def _do_cherry_pick(self):
         branches = self._list_branches()
-        branch = show_menu("", branches, multiSelect=False, columns=1, rows=15, maxColumnWidth=50)
+        branch = show_menu(branches, multiselect=False)
         return self._command_with_hash(branch)
 
 if __name__ == "__main__":
