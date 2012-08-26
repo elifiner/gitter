@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2012 Eli Golovinsky <eli.golovinsky@gmail.com>.
+# Copyright (C) 2012 Eli Finer <eli.finer@gmail.com>.
 #
 # This file is part of Gitter.
 #
@@ -26,15 +26,15 @@ branches / hashes when appropriate and stays out of way the rest of the time.
 setup(
     name='gitter',
     version='0.1.0',
-    description='Interactive in-line menus for Unix-based terminals',
+    description='Improved command line interface for git',
     long_description=DESCRIPTION,
-    author='Eli Golovinsky',
+    author='Eli Finer',
     license='GPL',
-    author_email='eli.golovinsky@gmail.com',
+    author_email='eli.finer@gmail.com',
     url='https://github.com/gooli/gitter',
     scripts=['gitter'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -43,6 +43,6 @@ setup(
         'Programming Language :: Python',
         'Topic :: Terminals'
     ],
-    install_requires=["termenu>=0.3.0"],
+    install_requires=["termenu>=1.0.0"],
 )
 
