@@ -5,8 +5,10 @@ import termenu
 
 GITBIN = "/usr/bin/git"
 
-def show_menu(options, multiselect):
+def show_menu(options, multiselect, precolored=False):
     plugins = [termenu.FilterPlugin(), termenu.HeaderPlugin()]
+    if precolored:
+        plugins.append(termenu.Precolored())
     return termenu.Termenu(options, multiselect=multiselect, height=15, plugins=plugins).show()
 
 class GitRunner(object):
@@ -84,7 +86,8 @@ class GitRunner(object):
         return self._with_header("Tracked", map(str.strip, lines))
 
     def _list_commits(self, branch):
-        lines = os.popen("%s log %s --oneline" % (GITBIN, branch)).readlines()
+        cmd = "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)%cn%Creset' --abbrev-commit --date=relative"
+        lines = os.popen("%s %s %s | head -30" % (GITBIN, cmd, branch)).readlines()
         lines = map(str.strip, lines)
         return lines
 
@@ -102,7 +105,7 @@ class GitRunner(object):
         options = self._list_commits(branch)
         if not options:
             return
-        selected = show_menu(options, multiselect=False)
+        selected = show_menu(options, multiselect=False, precolored=True)
         if not selected:
             return
         selected = selected.split(" ", 1)[0]
