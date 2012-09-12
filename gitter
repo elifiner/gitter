@@ -52,7 +52,7 @@ class GitRunner(object):
     # Lists of items to show in a menu
 
     def _with_header(self, header, lines):
-        return [termenu.Header("-- %s --" % header)] + lines if lines else lines
+        return [termenu.Header(header)] + lines if lines else lines
 
     def _status_files(self, workspaceStatuses="?M ", indexStatuses="?M "):
         lines = os.popen("%s status --porcelain" % GITBIN).readlines()
