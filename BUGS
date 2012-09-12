@@ -1,0 +1,4 @@
+Bugs
+====
+
+* gt show fails when log lines are wider than terminal window
