@@ -108,7 +108,7 @@ class GitRunner(object):
         selected = show_menu(options, multiselect=False, precolored=True)
         if not selected:
             return
-        selected = selected.split(" ", 1)[0]
+        selected = selected[0].split(" ", 1)[0]
         return self._exec_git([self.command] + self.args + [selected])
 
     # Command handlers
