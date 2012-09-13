@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import re
 import sys
 import termenu
 
@@ -10,6 +11,12 @@ def show_menu(options, multiselect, precolored=False):
     if precolored:
         plugins.append(termenu.Precolored())
     return termenu.Termenu(options, multiselect=multiselect, height=15, plugins=plugins).show()
+
+class RemoteBranch(str):
+    pass
+
+class LocalBranch(str):
+    pass
 
 class GitRunner(object):
     def __init__(self, args):
@@ -61,10 +68,18 @@ class GitRunner(object):
         files = [os.path.relpath(os.path.os.path.join(root, file)) for file in files]
         return list(files)
 
-    def _list_branches(self):
+    def _list_local_branches(self):
         branches = os.popen("%s branch" % GITBIN).readlines()
         branches = [b.strip("*").strip() for b in branches]
-        return self._with_header("Branches", list(sorted(branches)))
+        branches = [LocalBranch(b) for b in branches]
+        return self._with_header("Local Branches", sorted(branches))
+
+    def _list_remote_branches(self):
+        branches = os.popen("%s branch -r" % GITBIN).readlines()
+        branches = [b.strip() for b in branches]
+        branches = [b for b in branches if "->" not in b]
+        branches = [RemoteBranch(b) for b in branches]
+        return self._with_header("Remote Branches", sorted(branches))
 
     def _list_modified(self):
         return self._with_header("Modified", self._status_files("M", ""))
@@ -114,7 +129,16 @@ class GitRunner(object):
     # Command handlers
 
     def _do_checkout(self):
-        return self._command_with_menu(self._list_modified() + self._list_deleted() + self._list_branches(), multiselect=True)
+        options = self._list_modified() + self._list_deleted() + self._list_local_branches() + self._list_remote_branches()
+        selected = show_menu(options, multiselect=True)
+        if not selected:
+            return
+        for s in selected:
+            if isinstance(s, (RemoteBranch, LocalBranch)) and len(selected) > 1:
+                raise Exception("more than one branch selected")
+        if isinstance(selected[0], RemoteBranch):
+            selected = ["-b", selected[0].split("/")[-1], selected[0]]
+        return self._exec_git([self.command] + self.args + selected)
 
     def _do_add(self):
         if "-i" in self.flags or "--interactive" in self.flags:
@@ -129,12 +153,12 @@ class GitRunner(object):
 
     def _do_branch(self):
         if "-D" in self.flags or "-d" in self.flags:
-            return self._command_with_menu(self._list_branches(), multiselect=True)
+            return self._command_with_menu(self._list_local_branches(), multiselect=True)
         else:
             return self._exec_default()
 
     def _do_merge(self):
-        return self._command_with_menu(self._list_branches(), multiselect=False)
+        return self._command_with_menu(self._list_local_branches(), multiselect=False)
 
     def _do_rm(self):
         return self._command_with_menu(self._list_deleted() + self._list_tracked(), multiselect=True)
@@ -143,10 +167,14 @@ class GitRunner(object):
         return self._command_with_menu(self._list_untracked(), multiselect=True)
 
     def _do_cherry_pick(self):
-        branches = self._list_branches()
+        branches = self._list_local_branches()
         branch = show_menu(branches, multiselect=False)
         return self._command_with_hash(branch)
 
 if __name__ == "__main__":
-    ret = GitRunner(sys.argv[1:]).run()
+    try:
+        ret = GitRunner(sys.argv[1:]).run()
+    except Exception, e:
+        print "gitter error: " + str(e)
+        sys.exit(1)
     sys.exit(ret or 127)
