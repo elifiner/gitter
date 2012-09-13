@@ -87,7 +87,7 @@ class GitRunner(object):
 
     def _list_commits(self, branch):
         cmd = "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)%cn%Creset' --abbrev-commit --date=relative"
-        lines = os.popen("%s %s %s | head -30" % (GITBIN, cmd, branch)).readlines()
+        lines = os.popen("%s %s %s -100" % (GITBIN, cmd, branch)).readlines()
         lines = map(str.strip, lines)
         return lines
 
