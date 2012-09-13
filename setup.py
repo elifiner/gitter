@@ -25,7 +25,7 @@ branches / hashes when appropriate and stays out of way the rest of the time.
 
 setup(
     name='gitter',
-    version='0.1.0',
+    version='0.2.0',
     description='Improved command line interface for git',
     long_description=DESCRIPTION,
     author='Eli Finer',
@@ -33,6 +33,7 @@ setup(
     author_email='eli.finer@gmail.com',
     url='https://github.com/gooli/gitter',
     scripts=['gitter'],
+    data_files=[("/etc/bash_completion.d", ["gitter-completion.bash"])],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
