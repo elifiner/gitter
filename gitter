@@ -168,7 +168,7 @@ class GitRunner(object):
     def _do_cherry_pick(self):
         branches = self._list_local_branches()
         branch = show_menu(branches, multiselect=False)
-        return self._command_with_hash(branch)
+        return self._command_with_hash(branch[0])
 
 if __name__ == "__main__":
     try:
