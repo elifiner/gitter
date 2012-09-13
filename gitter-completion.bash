@@ -2,7 +2,7 @@
 #
 # bash completion support for Gitter.
 #
-# Copyright (C) 2012 Eli Golovinsky <eli.golovinsky@gmail.com>
+# Copyright (C) 2012 Eli Finer <eli.finer@gmail.com>
 # Uses and depends on git-completion.bash from git/contrib/completion.
 #
 source /etc/bash_completion.d/git-completion.bash
