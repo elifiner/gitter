@@ -6,10 +6,7 @@ import termenu
 GITBIN = "/usr/bin/git"
 
 def show_menu(options, multiselect, precolored=False):
-    plugins = [termenu.FilterPlugin(), termenu.HeaderPlugin()]
-    if precolored:
-        plugins.append(termenu.PrecoloredPlugin())
-    return termenu.Termenu(options, multiselect=multiselect, height=15, plugins=plugins).show()
+    return termenu.show_menu("", options, multiselect=multiselect, precolored=precolored, height=15)
 
 class RemoteBranch(str):
     pass
@@ -64,7 +61,10 @@ class GitRunner(object):
     # Lists of items to show in a menu
 
     def _with_header(self, header, lines):
-        return [termenu.Header(header)] + lines if lines else lines
+        if lines:
+            return [termenu.OptionGroup(header, lines)]
+        else:
+            return []
 
     def _status_files(self, workspaceStatuses="?M ", indexStatuses="?M "):
         lines = os.popen("%s status --porcelain" % GITBIN).readlines()
