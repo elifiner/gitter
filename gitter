@@ -8,7 +8,7 @@ GITBIN = "/usr/bin/git"
 def show_menu(options, multiselect, precolored=False):
     plugins = [termenu.FilterPlugin(), termenu.HeaderPlugin()]
     if precolored:
-        plugins.append(termenu.Precolored())
+        plugins.append(termenu.PrecoloredPlugin())
     return termenu.Termenu(options, multiselect=multiselect, height=15, plugins=plugins).show()
 
 class RemoteBranch(str):
@@ -57,6 +57,7 @@ class GitRunner(object):
         command = " ".join([GITBIN] + args)
         if self._debug:
             print command
+            return 0
         else:
             return os.system(command)
 
@@ -122,7 +123,7 @@ class GitRunner(object):
             selected = [selected]
         return self._exec_git([self.command] + self.args + selected)
 
-    def _command_with_hash(self, branch):
+    def _command_with_hash(self, branch=""):
         options = self._list_commits(branch)
         if not options:
             return
@@ -145,7 +146,11 @@ class GitRunner(object):
                 raise Exception("more than one branch selected")
         if isinstance(selected[0], RemoteBranch):
             selected = ["-b", selected[0].split("/")[-1], selected[0]]
-        return self._exec_git([self.command] + self.args + selected)
+        ret = self._exec_git([self.command] + self.args + selected)
+        if ret == 0:
+            return self._exec_git("submodule update --init --recursive".split())
+        else:
+            return ret
 
     def _do_add(self):
         self._assert_repo()
