@@ -118,16 +118,18 @@ class GitRunner(object):
         selected = show_menu(options, multiselect=multiselect)
         if not selected:
             return
+        if not multiselect:
+            selected = [selected]
         return self._exec_git([self.command] + self.args + selected)
 
-    def _command_with_hash(self, branch=""):
+    def _command_with_hash(self, branch):
         options = self._list_commits(branch)
         if not options:
             return
         selected = show_menu(options, multiselect=False, precolored=True)
         if not selected:
             return
-        selected = selected[0].split(" ", 1)[0]
+        selected = selected.split(" ", 1)[0]
         return self._exec_git([self.command] + self.args + [selected])
 
     # Command handlers
@@ -180,9 +182,10 @@ class GitRunner(object):
 
     def _do_cherry_pick(self):
         self._assert_repo()
-        branches = self._list_local_branches()
+        branches = self._list_local_branches() + self._list_remote_branches()
         branch = show_menu(branches, multiselect=False)
-        return self._command_with_hash(branch[0])
+        if branch:
+            return self._command_with_hash(branch)
 
 if __name__ == "__main__":
     try:
