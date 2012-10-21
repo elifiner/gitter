@@ -139,15 +139,18 @@ class GitRunner(object):
         self._assert_repo()
         options = self._list_modified() + self._list_deleted() + self._list_local_branches() + self._list_remote_branches()
         selected = show_menu(options, multiselect=True)
+        branch = False
         if not selected:
             return
         for s in selected:
-            if isinstance(s, (RemoteBranch, LocalBranch)) and len(selected) > 1:
-                raise Exception("more than one branch selected")
+            if isinstance(s, (RemoteBranch, LocalBranch)):
+                branch = True
+        if branch and len(selected) > 1:
+            raise Exception("more than one branch selected")
         if isinstance(selected[0], RemoteBranch):
             selected = ["-b", selected[0].split("/")[-1], selected[0]]
         ret = self._exec_git([self.command] + self.args + selected)
-        if ret == 0:
+        if ret == 0 and branch:
             return self._exec_git("submodule update --init --recursive".split())
         else:
             return ret
