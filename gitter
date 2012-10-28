@@ -50,7 +50,7 @@ class GitRunner(object):
         return self._exec_git([self.command] + self.args)
 
     def _exec_git(self, args):
-        args = ['"%s"' % arg if " " in arg else arg for arg in args]
+        args = ['"%s"' % arg if " " in arg and not arg.startswith('"') else arg for arg in args]
         command = " ".join([GITBIN] + args)
         if self._debug:
             print command
