@@ -25,7 +25,7 @@ branches / hashes when appropriate and stays out of way the rest of the time.
 
 setup(
     name='gitter',
-    version='0.2.0',
+    version='0.2.1',
     description='Improved command line interface for git',
     long_description=DESCRIPTION,
     author='Eli Finer',
