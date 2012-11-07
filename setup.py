@@ -25,7 +25,7 @@ branches / hashes when appropriate and stays out of way the rest of the time.
 
 setup(
     name='gitter',
-    version='0.2.1',
+    version='0.2.2',
     description='Improved command line interface for git',
     long_description=DESCRIPTION,
     author='Eli Finer',
@@ -44,6 +44,6 @@ setup(
         'Programming Language :: Python',
         'Topic :: Terminals'
     ],
-    install_requires=["termenu>=1.0.0"],
+    install_requires=["termenu>=1.1.1"],
 )
 
