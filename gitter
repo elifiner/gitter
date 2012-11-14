@@ -2,8 +2,9 @@
 import os
 import sys
 import termenu
+import version
 
-GITBIN = "/usr/bin/git"
+GITBIN = os.popen("which git").read().strip()
 
 def show_menu(options, multiselect, precolored=False):
     return termenu.show_menu("", options, multiselect=multiselect, precolored=precolored, height=15)
@@ -24,6 +25,7 @@ class GitRunner(object):
 
     def run(self):
         if not self.args or "--help" in self.args:
+            print >>sys.stderr, termenu.ansi.colorize("Running via gitter v%s (http://github/gooli/gitter)\n" % version.version, "white", bright=True)
             return self._exec_git(self.args)
         self.command = self.args[0]
         self.args = self.args[1:]

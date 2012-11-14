@@ -17,6 +17,7 @@
 # along with Gitter.  If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup
+from version import version
 
 DESCRIPTION = """
 A command line interface for git that shows interactive menus for files /
@@ -25,7 +26,7 @@ branches / hashes when appropriate and stays out of way the rest of the time.
 
 setup(
     name='gitter',
-    version='0.2.2',
+    version=version,
     description='Improved command line interface for git',
     long_description=DESCRIPTION,
     author='Eli Finer',
