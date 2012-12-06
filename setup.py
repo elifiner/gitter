@@ -33,6 +33,8 @@ setup(
     license='GPL',
     author_email='eli.finer@gmail.com',
     url='https://github.com/gooli/gitter',
+    package_dir={'gitter':'.'},
+    packages=['gitter'],
     scripts=['gitter'],
     data_files=[("/etc/bash_completion.d", ["gitter-completion.bash"])],
     classifiers=[
