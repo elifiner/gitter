@@ -47,6 +47,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Terminals'
     ],
-    install_requires=["termenu==1.1.1"],
+    install_requires=["termenu==1.1.2"],
 )
-
