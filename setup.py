@@ -17,24 +17,30 @@
 # along with Gitter.  If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup
-from version import version
 
 DESCRIPTION = """
 A command line interface for git that shows interactive menus for files /
 branches / hashes when appropriate and stays out of way the rest of the time.
 """
 
+# get version without importing
+for line in open('gitter'):
+    if line.startswith('__version__ = '):
+        exec(line)
+        break
+else:
+    raise Exception("can't determine version")
+
+
 setup(
     name='gitter',
-    version=version,
+    version=__version__,
     description='Improved command line interface for git',
     long_description=DESCRIPTION,
     author='Eli Finer',
     license='GPL',
     author_email='eli.finer@gmail.com',
     url='https://github.com/gooli/gitter',
-    package_dir={'gitter':'.'},
-    packages=['gitter'],
     scripts=['gitter'],
     data_files=[("/etc/bash_completion.d", ["gitter-completion.bash"])],
     classifiers=[

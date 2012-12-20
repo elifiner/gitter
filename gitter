@@ -2,7 +2,8 @@
 import os
 import sys
 import termenu
-import version
+
+__version__ = "0.2.4a"
 
 GITBIN = os.popen("which git").read().strip()
 
@@ -25,7 +26,8 @@ class GitRunner(object):
 
     def run(self):
         if not self.args or "--help" in self.args:
-            print >>sys.stderr, termenu.ansi.colorize("Running via gitter v%s (http://github/gooli/gitter)\n" % version.version, "white", bright=True)
+            print >>sys.stderr, termenu.ansi.colorize("Running via gitter v%s (http://github/gooli/gitter)\n" % __version__, "white", bright=True)
+
             return self._exec_git(self.args)
         self.command = self.args[0]
         self.args = self.args[1:]
