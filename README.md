@@ -29,7 +29,7 @@ Here are the supported commands:
 * `gt merge` - shows a list of branches
 * `gt show` - shows a list of commits in the current branch
 * `gt clean` - shows a list of untracked files
-* `gt branch` -d - shows a list of branches for deletion
+* `gt branch -d` - shows a list of branches for deletion
 * `gt revert` - shows a list of commits to revert
 
 Installation
