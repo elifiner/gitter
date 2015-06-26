@@ -168,6 +168,12 @@ class GitRunner(object):
             return self._exec_default()
         return self._command_with_menu(self._list_modified() + self._list_both_modified() + self._list_untracked(), multiselect=True)
 
+    def _do_rebase(self):
+        self._assert_repo()
+        if "-i" in self.flags or "--interactive" in self.flags:
+            return self._command_with_hash()
+        return self._exec_default()
+
     def _do_reset(self):
         self._assert_repo()
         return self._command_with_menu(self._list_to_be_committed(), multiselect=True)
