@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Gitter.  If not, see <http://www.gnu.org/licenses/>.
 
+import platform
 from setuptools import setup
 
 DESCRIPTION = """
@@ -31,6 +32,9 @@ for line in open('gitter'):
 else:
     raise Exception("can't determine version")
 
+bash_completion_path = '/etc/bash_completion.d'
+if platform.system() == 'Darwin':
+    bash_completion_path = '/usr/local/etc/bash_completion.d'
 
 setup(
     name='gitter',
@@ -42,7 +46,7 @@ setup(
     author_email='eli.finer@gmail.com',
     url='https://github.com/gooli/gitter',
     scripts=['gitter'],
-    data_files=[("/etc/bash_completion.d", ["gitter-completion.bash"])],
+    data_files=[(bash_completion_path, ['gitter-completion.bash'])],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -53,5 +57,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Terminals'
     ],
-    install_requires=["termenu==1.1.5"],
+    install_requires=['termenu==1.1.6'],
 )
