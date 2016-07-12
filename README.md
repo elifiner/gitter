@@ -7,6 +7,8 @@ to the common git commands, but otherwise stays out of your way.
 
 Gitter uses [termenu](https://github.com/gooli/termenu) for the menus.
 
+![gitter showdown](img/gitter-showdown.gif)
+
 Usage
 =====
 
