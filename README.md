@@ -7,6 +7,8 @@ to the common git commands, but otherwise stays out of your way.
 
 Gitter uses [termenu](https://github.com/gooli/termenu) for the menus.
 
+![gitter showdown](img/gitter-showdown.gif)
+
 Usage
 =====
 
@@ -17,7 +19,7 @@ After you install gitter, I highly recommend creating an alias:
 Gitter works exactly like git and accepts all its commands and parameters. 
 
 When you don't supply arguments for common commands, an appropriate menu is shown.
-Note that you can search in the menu just by typing stuff and use <space> to select multiple items.
+Note that you can search in the menu just by typing stuff and use `<space>` to select multiple items.
 
 Here are the supported commands:
 
@@ -31,6 +33,7 @@ Here are the supported commands:
 * `gt clean` - shows a list of untracked files
 * `gt branch -d` - shows a list of branches for deletion
 * `gt revert` - shows a list of commits to revert
+* `gt rebase -i` - select a commit to interactively rebase from
 
 Installation
 ============
@@ -38,7 +41,3 @@ Installation
 The package is available from PyPI, so installation is easy:
 
     sudo pip install gitter
-
-or:
-
-    sudo pip install easy_install
