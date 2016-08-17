@@ -222,6 +222,8 @@ class GitRunner(object):
 
     def _do_diff(self):
         self._assert_repo()
+        if self.args:
+            return self._exec_default()
         options = self._list_cached() + self._list_modified() + self._list_both_modified()
         selected = show_menu(options, multiselect=True)
         cached = False
