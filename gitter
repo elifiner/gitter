@@ -3,7 +3,7 @@ import os
 import sys
 import termenu
 
-__version__ = "0.2.11"
+__version__ = "0.2.12"
 
 GITBIN = os.popen("which git").read().strip()
 
@@ -14,6 +14,9 @@ class RemoteBranch(str):
     pass
 
 class LocalBranch(str):
+    pass
+
+class CachedFile(str):
     pass
 
 class GitRunner(object):
@@ -100,8 +103,9 @@ class GitRunner(object):
     def _list_untracked(self):
         return self._with_header("Untracked", self._status_files("?", ""))
 
-    def _list_to_be_committed(self):
-        return self._with_header("To be committed", self._status_files("", "MA"))
+    def _list_cached(self):
+        files = map(CachedFile, self._status_files("", "MA"))
+        return self._with_header("Cached", files)
 
     def _list_both_modified(self):
         return self._with_header("Both modified", self._status_files("", "U"))
@@ -176,7 +180,7 @@ class GitRunner(object):
 
     def _do_reset(self):
         self._assert_repo()
-        return self._command_with_menu(self._list_to_be_committed(), multiselect=True)
+        return self._command_with_menu(self._list_cached(), multiselect=True)
 
     def _do_show(self):
         self._assert_repo()
@@ -218,7 +222,22 @@ class GitRunner(object):
 
     def _do_diff(self):
         self._assert_repo()
-        return self._command_with_menu(self._list_modified() + self._list_both_modified(), multiselect=True)
+        options = self._list_cached() + self._list_modified() + self._list_both_modified()
+        selected = show_menu(options, multiselect=True)
+        cached = False
+        non_cached = False
+        if not selected:
+            return
+        for s in selected:
+            if isinstance(s, CachedFile):
+                cached = True
+            else:
+                non_cached = True
+        if cached and non_cached:
+            raise Exception("can show diffs for cached files or modified files, but not both")
+        if cached:
+            self.args += ["--cached"]
+        return self._exec_git([self.command] + self.args + selected)
 
 if __name__ == "__main__":
     try:
