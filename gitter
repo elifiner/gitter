@@ -218,6 +218,8 @@ class GitRunner(object):
 
     def _do_revert(self):
         self._assert_repo()
+        if self.flags:
+            return self._exec_default()
         return self._command_with_hash()
 
     def _do_diff(self):
