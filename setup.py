@@ -44,7 +44,7 @@ setup(
     author='Eli Finer',
     license='GPL',
     author_email='eli.finer@gmail.com',
-    url='https://github.com/gooli/gitter',
+    url='https://github.com/elifiner/gitter',
     scripts=['gitter'],
     data_files=[(bash_completion_path, ['gitter-completion.bash'])],
     classifiers=[

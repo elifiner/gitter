@@ -5,7 +5,7 @@ I love git and I love the command line, but sometimes the git command line
 interface feels a bit tedious. Gitter addds non-intrusive interactive menus
 to the common git commands, but otherwise stays out of your way.
 
-Gitter uses [termenu](https://github.com/gooli/termenu) for the menus.
+Gitter uses [termenu](https://github.com/elifiner/termenu) for the menus.
 
 ![gitter showdown](img/gitter-showdown.gif)
 
