@@ -128,6 +128,9 @@ class GitRunner(object):
         lines = map(str.strip, lines)
         return lines
 
+    def _get_selected_types(self, selected):
+        return list(set(type(s) for s in selected))
+
     # Command abstractions
 
     def _command_with_menu(self, options, multiselect):
@@ -242,18 +245,10 @@ class GitRunner(object):
         if not options:
             return self._exec_default()
         selected = show_menu(options, multiselect=True)
-        cached = False
-        non_cached = False
-        if not selected:
-            return
-        for s in selected:
-            if isinstance(s, CachedFile):
-                cached = True
-            else:
-                non_cached = True
-        if cached and non_cached:
+        types = self._get_selected_types(selected)
+        if len(types) > 1:
             raise Exception("can show diffs for cached files or modified files, but not both")
-        if cached:
+        if types[0] == CachedFile:
             self.args += ["--cached"]
         return self._exec_git([self.command] + self.args + selected)
 
