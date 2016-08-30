@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os
 import sys
-import termenu
+from termenu import termenu
 
-__version__ = "0.2.12"
+__version__ = "0.3.0"
 
 GITBIN = os.popen("which git").read().strip()
 
@@ -16,6 +16,11 @@ class CachedFile(str): pass
 class CacheDeletedFile(str): pass
 class BothModifiedFile(str): pass
 
+if sys.version_info[0] >= 3:
+    import builtins
+    def map(func, *iterable):
+        return list(builtins.map(func, *iterable))
+
 class GitRunner(object):
     def __init__(self, args):
         self._debug = False
@@ -26,7 +31,8 @@ class GitRunner(object):
 
     def run(self):
         if not self.args or "--help" in self.args:
-            print >>sys.stderr, termenu.ansi.colorize("Running via gitter v%s (http://github/elifiner/gitter)\n" % __version__, "white", bright=True)
+            message = "Running via gitter v%s (http://github/elifiner/gitter)\n" % __version__
+            print(termenu.ansi.colorize(message, "white", bright=True), file=sys.stderr)
             return self._exec_git(self.args)
         self._run()
 
@@ -59,7 +65,7 @@ class GitRunner(object):
         args = ['"%s"' % arg if " " in arg and not arg.startswith('"') else arg for arg in args]
         command = " ".join([GITBIN] + args)
         if self._debug:
-            print command
+            print(command)
             return 0
         else:
             return self._system(command)
@@ -260,7 +266,7 @@ class GitRunner(object):
 if __name__ == "__main__":
     try:
         ret = GitRunner(sys.argv[1:]).run()
-    except Exception, e:
-        print "gitter error: " + str(e)
+    except Exception as e:
+        print("gitter error: " + str(e))
         sys.exit(1)
     sys.exit(ret or 127)
