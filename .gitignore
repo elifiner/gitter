@@ -1,4 +1,6 @@
 *.pyc
+*.egg-info/
+*.sublime*
+venv/
 build/
 dist/
-*.egg-info/
