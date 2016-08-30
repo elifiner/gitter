@@ -10,14 +10,14 @@ GITBIN = os.popen("which git").read().strip()
 def show_menu(options, multiselect, precolored=False):
     return termenu.show_menu("", options, multiselect=multiselect, precolored=precolored, height=15)
 
-class RemoteBranch(str):
-    pass
-
-class LocalBranch(str):
-    pass
-
-class CachedFile(str):
-    pass
+class RemoteBranch(str): pass
+class LocalBranch(str): pass
+class ModifiedFile(str): pass
+class DeletedFile(str): pass
+class UntrackedFile(str): pass
+class CachedFile(str): pass
+class CacheDeletedFile(str): pass
+class BothModifiedFile(str): pass
 
 class GitRunner(object):
     def __init__(self, args):
@@ -95,20 +95,28 @@ class GitRunner(object):
         return self._with_header("Remote Branches", sorted(branches))
 
     def _list_modified(self):
-        return self._with_header("Modified", self._status_files("M", ""))
+        files = map(ModifiedFile, self._status_files("M", ""))
+        return self._with_header("Modified", files)
 
     def _list_deleted(self):
-        return self._with_header("Deleted", self._status_files("D", ""))
+        files = map(DeletedFile, self._status_files("D", ""))
+        return self._with_header("Deleted", files)
 
     def _list_untracked(self):
-        return self._with_header("Untracked", self._status_files("?", ""))
+        files = map(UntrackedFile, self._status_files("?", ""))
+        return self._with_header("Untracked", files)
 
     def _list_cached(self):
         files = map(CachedFile, self._status_files("", "MA"))
         return self._with_header("Cached", files)
 
+    def _list_cache_deleted(self):
+        files = map(CacheDeletedFile, self._status_files("", "D"))
+        return self._with_header("Cache Deleted", files)
+
     def _list_both_modified(self):
-        return self._with_header("Both modified", self._status_files("", "U"))
+        files = map(BothModifiedFile, self._status_files("", "U"))
+        return self._with_header("Both modified", files)
 
     def _list_tracked(self):
         lines = os.popen("%s ls-files" % GITBIN).readlines()
