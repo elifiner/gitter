@@ -228,6 +228,8 @@ class GitRunner(object):
         if self.args:
             return self._exec_default()
         options = self._list_cached() + self._list_modified() + self._list_both_modified()
+        if not options:
+            return self._exec_default()
         selected = show_menu(options, multiselect=True)
         cached = False
         non_cached = False
