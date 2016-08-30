@@ -7,9 +7,6 @@ __version__ = "0.2.12"
 
 GITBIN = os.popen("which git").read().strip()
 
-def show_menu(options, multiselect, precolored=False):
-    return termenu.show_menu("", options, multiselect=multiselect, precolored=precolored, height=15)
-
 class RemoteBranch(str): pass
 class LocalBranch(str): pass
 class ModifiedFile(str): pass
@@ -30,8 +27,10 @@ class GitRunner(object):
     def run(self):
         if not self.args or "--help" in self.args:
             print >>sys.stderr, termenu.ansi.colorize("Running via gitter v%s (http://github/elifiner/gitter)\n" % __version__, "white", bright=True)
-
             return self._exec_git(self.args)
+        self._run()
+
+    def _run(self):
         self.command = self.args[0]
         self.args = self.args[1:]
         self.freeArgs = [arg for arg in self.args if not arg.startswith("-")]
@@ -63,7 +62,13 @@ class GitRunner(object):
             print command
             return 0
         else:
-            return os.system(command)
+            return self._system(command)
+
+    def _system(self, command):
+        return os.system(command)
+
+    def _show_menu(self, options, multiselect, precolored=False):
+        return termenu.show_menu("", options, multiselect=multiselect, precolored=precolored, height=15)
 
     # Lists of items to show in a menu
 
@@ -136,7 +141,7 @@ class GitRunner(object):
     def _command_with_menu(self, options, multiselect):
         if not options:
             return
-        selected = show_menu(options, multiselect=multiselect)
+        selected = self._show_menu(options, multiselect=multiselect)
         if not selected:
             return
         if not multiselect:
@@ -147,7 +152,7 @@ class GitRunner(object):
         options = self._list_commits(branch)
         if not options:
             return
-        selected = show_menu(options, multiselect=multiselect, precolored=True)
+        selected = self._show_menu(options, multiselect=multiselect, precolored=True)
         if not selected:
             return
         if not multiselect:
@@ -161,7 +166,7 @@ class GitRunner(object):
     def _do_checkout(self):
         self._assert_repo()
         options = self._list_modified() + self._list_deleted() + self._list_local_branches() + self._list_remote_branches()
-        selected = show_menu(options, multiselect=True)
+        selected = self._show_menu(options, multiselect=True)
         branch = False
         if not selected:
             return
@@ -227,7 +232,7 @@ class GitRunner(object):
         if self.flags:
             return self._exec_default()
         branches = self._list_local_branches() + self._list_remote_branches()
-        branch = show_menu(branches, multiselect=False)
+        branch = self._show_menu(branches, multiselect=False)
         if branch:
             return self._command_with_hash(branch, multiselect=True)
 
@@ -244,7 +249,7 @@ class GitRunner(object):
         options = self._list_cached() + self._list_modified() + self._list_both_modified()
         if not options:
             return self._exec_default()
-        selected = show_menu(options, multiselect=True)
+        selected = self._show_menu(options, multiselect=True)
         types = self._get_selected_types(selected)
         if len(types) > 1:
             raise Exception("can show diffs for cached files or modified files, but not both")
