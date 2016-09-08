@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import os
 import sys
-from termenu import termenu
+import termenu
 
 __version__ = "0.3.0"
 
@@ -275,5 +275,6 @@ if __name__ == "__main__":
         ret = GitRunner(sys.argv[1:]).run()
     except Exception as e:
         print("gitter error: " + str(e))
+        import traceback; traceback.print_exc()
         sys.exit(1)
     sys.exit(ret or 127)
