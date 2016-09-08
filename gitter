@@ -261,8 +261,10 @@ class GitRunner(object):
             return self._exec_default()
         options = self._list_cached() + self._list_modified() + self._list_both_modified()
         if not options:
-            return self._exec_default()
+            return
         selected = self._show_menu(options, multiselect=True)
+        if not selected:
+            return
         types = self._get_selected_types(selected)
         if len(types) > 1:
             raise Exception("can show diffs for cached files or modified files, but not both")
