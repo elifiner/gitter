@@ -206,7 +206,11 @@ class GitRunner(object):
         self._assert_repo()
         if "-i" in self.flags or "--interactive" in self.flags:
             return self._command_with_hash()
-        return self._exec_default()
+        elif not self.args:
+            branches = self._list_local_branches() + self._list_remote_branches()
+            return self._command_with_menu(branches, multiselect=False)
+        else:
+            return self._exec_default()
 
     def _do_reset(self):
         self._assert_repo()
