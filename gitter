@@ -99,18 +99,18 @@ class GitRunner(object):
         files = [os.path.relpath(os.path.os.path.join(root, file)) for file in files]
         return list(files)
 
-    def _list_local_branches(self):
-        branches = popen("%s branch" % GITBIN)
+    def _list_local_branches(self, sort_by='-creatordate'):
+        branches = popen("%s branch --sort %s" % (GITBIN, sort_by))
         branches = [b.strip("*").strip() for b in branches]
         branches = [LocalBranch(b) for b in branches]
-        return self._with_header("Local Branches", sorted(branches))
+        return self._with_header("Local Branches", branches)
 
-    def _list_remote_branches(self):
-        branches = popen("%s branch -r" % GITBIN)
+    def _list_remote_branches(self, sort_by='-creatordate'):
+        branches = popen("%s branch -r --sort %s" % (GITBIN, sort_by))
         branches = [b.strip() for b in branches]
         branches = [b for b in branches if "->" not in b]
         branches = [RemoteBranch(b) for b in branches]
-        return self._with_header("Remote Branches", sorted(branches))
+        return self._with_header("Remote Branches", branches)
 
     def _list_modified(self):
         files = map(ModifiedFile, self._status_files("M", ""))
