@@ -189,7 +189,7 @@ class GitRunner(object):
         if branch and len(selected) > 1:
             raise Exception("more than one branch selected")
         if isinstance(selected[0], RemoteBranch):
-            selected = ["-b", selected[0].split("/")[-1], selected[0]]
+            selected = ["-b", "/".join(selected[0].split("/")[1:]), selected[0]]
         ret = self._exec_git([self.command] + self.args + selected)
         if ret == 0 and branch:
             return self._exec_git("submodule update --init --recursive".split())
