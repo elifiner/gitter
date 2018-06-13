@@ -215,9 +215,9 @@ class GitRunner(object):
     def _do_reset(self):
         self._assert_repo()
         if self.args:
-            return self._ex2ec_default()
+            return self._exec_default()
         self.args += ['HEAD']
-        return self._command_with_menu(self._list_cached() + self._list_cache_deleted(), multiselect=True)
+        return self._command_with_menu(self._list_cached() + self._list_cache_deleted() + self._list_both_modified(), multiselect=True)
 
     def _do_show(self):
         self._assert_repo()
