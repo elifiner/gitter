@@ -133,7 +133,7 @@ class GitRunner(object):
         return self._with_header("Cache Deleted", files)
 
     def _list_both_modified(self):
-        files = map(BothModifiedFile, self._status_files("", "U"))
+        files = map(BothModifiedFile, self._status_files("U", "U"))
         return self._with_header("Both modified", files)
 
     def _list_tracked(self):
