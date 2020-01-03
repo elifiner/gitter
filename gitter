@@ -113,7 +113,7 @@ class GitRunner(object):
         return self._with_header("Remote Branches", branches)
 
     def _list_modified(self):
-        files = map(ModifiedFile, self._status_files("M", ""))
+        files = map(ModifiedFile, self._status_files("MT", ""))
         return self._with_header("Modified", files)
 
     def _list_deleted(self):
