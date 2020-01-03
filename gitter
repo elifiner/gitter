@@ -5,7 +5,7 @@ import os
 import sys
 import termenu
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 def popen(command):
     with os.popen(command) as f:
