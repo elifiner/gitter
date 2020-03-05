@@ -5,7 +5,7 @@ import os
 import sys
 import termenu
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 
 def popen(command):
     with os.popen(command) as f:
@@ -22,6 +22,7 @@ class UntrackedFile(str): pass
 class CachedFile(str): pass
 class CacheDeletedFile(str): pass
 class BothModifiedFile(str): pass
+class BothAddedFile(str): pass
 
 if sys.version_info[0] >= 3:
     import builtins
@@ -134,7 +135,11 @@ class GitRunner(object):
 
     def _list_both_modified(self):
         files = map(BothModifiedFile, self._status_files("U", "U"))
-        return self._with_header("Both modified", files)
+        return self._with_header("Both Modified", files)
+
+    def _list_both_added(self):
+        files = map(BothAddedFile, self._status_files("A", "A"))
+        return self._with_header("Both Added", files)
 
     def _list_tracked(self):
         lines = popen("%s ls-files" % GITBIN)
@@ -170,7 +175,7 @@ class GitRunner(object):
             return
         if not multiselect:
             selected = [selected]
-        selected = [s.split(" ", 1)[0] for s in selected] 
+        selected = [s.split(" ", 1)[0] for s in selected]
         selected = list(reversed(selected))
         return self._exec_git([self.command] + self.args + selected)
 
@@ -200,7 +205,7 @@ class GitRunner(object):
         self._assert_repo()
         if "-i" in self.flags or "--interactive" in self.flags:
             return self._exec_default()
-        return self._command_with_menu(self._list_modified() + self._list_both_modified() + self._list_untracked(), multiselect=True)
+        return self._command_with_menu(self._list_modified() + self._list_both_modified() + self._list_both_added() + self._list_untracked(), multiselect=True)
 
     def _do_rebase(self):
         self._assert_repo()
